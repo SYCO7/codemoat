@@ -27,6 +27,16 @@ export function firstCwe(cwe) {
     const match = cwe[0].match(/^CWE-\d+/);
     return match ? match[0] : cwe[0];
 }
+// When --config points at a local directory, Semgrep prefixes check_id with
+// a dotted version of the config's absolute filesystem path (e.g. on a GH
+// Actions runner: "home.runner.work._actions.SYCO7.codemoat.v1.src.rules.
+// codemoat-cors-wildcard-credentials"). Strip that down to just the rule's
+// own id. Registry rule ids (which are legitimately dotted, e.g.
+// "python.lang.security.audit.subprocess-shell-true...") are left alone.
+export function normalizeRuleId(checkId) {
+    const match = checkId.match(/codemoat-[a-z0-9-]+$/);
+    return match ? match[0] : checkId;
+}
 export async function runSemgrep(opts) {
     const configs = opts.configs ?? DEFAULT_SEMGREP_CONFIGS;
     const args = ["scan", "--json", "--metrics=off"];
@@ -44,7 +54,7 @@ export async function runSemgrep(opts) {
         endLine: r.end.line,
         severity: mapSeverity(r.extra.severity),
         cwe: firstCwe(r.extra.metadata?.cwe),
-        ruleId: r.check_id,
+        ruleId: normalizeRuleId(r.check_id),
         description: r.extra.message,
         suggestedFix: r.extra.fix,
         source: "semgrep",

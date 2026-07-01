@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mapSeverity, firstCwe } from "../../src/core/semgrep.js";
+import { mapSeverity, firstCwe, normalizeRuleId } from "../../src/core/semgrep.js";
 import { normalizeGitleaksFinding } from "../../src/core/gitleaks.js";
 import { sortFindings } from "../../src/core/scan.js";
 import type { Finding } from "../../src/core/types.js";
@@ -11,6 +11,21 @@ test("mapSeverity maps semgrep severities to the normalized scale", () => {
   assert.equal(mapSeverity("INFO"), "low");
   assert.equal(mapSeverity("error"), "high", "should be case-insensitive");
   assert.equal(mapSeverity("SOMETHING_UNKNOWN"), "medium", "unknown severities default to medium");
+});
+
+test("normalizeRuleId strips the runner's absolute config-path prefix off CodeMoat rule ids", () => {
+  assert.equal(
+    normalizeRuleId("home.runner.work._actions.SYCO7.codemoat.v1.src.rules.codemoat-cors-wildcard-credentials"),
+    "codemoat-cors-wildcard-credentials"
+  );
+  assert.equal(normalizeRuleId("src.rules.codemoat-weak-hardcoded-credential"), "codemoat-weak-hardcoded-credential");
+});
+
+test("normalizeRuleId leaves real dotted registry rule ids untouched", () => {
+  assert.equal(
+    normalizeRuleId("python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"),
+    "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+  );
 });
 
 test("mapSeverity also passes through CodeMoat's own CRITICAL/HIGH/MEDIUM/LOW rule severities", () => {
