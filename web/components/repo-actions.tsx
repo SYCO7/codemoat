@@ -7,6 +7,7 @@ import { RefreshCw, Trash2 } from "lucide-react";
 export function RepoActions({ repoId, fullName }: { repoId: string; fullName: string }) {
   const router = useRouter();
   const [newKey, setNewKey] = useState<string | null>(null);
+  const [autoSetupNote, setAutoSetupNote] = useState<string | null>(null);
   const [busy, setBusy] = useState<"regen" | "delete" | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +20,16 @@ export function RepoActions({ repoId, fullName }: { repoId: string; fullName: st
       const body = await res.json();
       if (!res.ok) throw new Error(body.error ?? "failed");
       setNewKey(body.apiKey);
+      const autoSetup = body.autoSetup as
+        | { secretCreated: boolean; workflowCreated: boolean; workflowAlreadyExisted: boolean; warning?: string }
+        | null;
+      if (autoSetup?.secretCreated) {
+        setAutoSetupNote("Repo secret updated automatically — the new key is already wired up.");
+      } else if (autoSetup) {
+        setAutoSetupNote(
+          `Couldn't update the repo secret automatically${autoSetup.warning ? ` (${autoSetup.warning})` : ""} — update it by hand in GitHub repo settings.`
+        );
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -50,6 +61,7 @@ export function RepoActions({ repoId, fullName }: { repoId: string; fullName: st
             New key generated — the old one stopped working immediately. Shown once:
           </p>
           <pre className="overflow-x-auto rounded-md border border-border bg-muted p-4 text-sm">{newKey}</pre>
+          {autoSetupNote && <p className="text-sm text-muted-foreground">{autoSetupNote}</p>}
         </div>
       ) : (
         <button

@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { generateApiKey } from "@/lib/api-key";
+import { autoSetupRepo } from "@/lib/github-secrets";
 
 const bodySchema = z.object({
   githubRepoId: z.number(),
@@ -36,7 +38,7 @@ export async function POST(request: Request) {
 
   if (isPrivate && org.plan !== "paid") {
     return NextResponse.json(
-      { error: "private_repos_require_paid_plan", message: "Private repos need a paid plan — coming soon." },
+      { error: "private_repos_require_paid_plan", message: "Private repos need a paid plan — upgrade in Settings." },
       { status: 402 }
     );
   }
@@ -67,6 +69,23 @@ export async function POST(request: Request) {
     );
   }
 
+  // Best-effort auto-wiring: create the repo secret + workflow file so the
+  // user doesn't have to hand-copy anything. profiles.github_access_token
+  // has SELECT revoked for anon/authenticated, so only the service client
+  // can read it back.
+  const service = createServiceClient();
+  const { data: profile } = await service
+    .from("profiles")
+    .select("github_access_token")
+    .eq("id", user.id)
+    .single();
+
+  let autoSetup = null;
+  const token = profile?.github_access_token as string | null;
+  if (token) {
+    autoSetup = await autoSetupRepo(token, owner, fullName.split("/")[1] ?? fullName, key);
+  }
+
   // apiKey is returned exactly once — it is never stored in plaintext anywhere.
-  return NextResponse.json({ repoId: repo.id, apiKey: key });
+  return NextResponse.json({ repoId: repo.id, apiKey: key, autoSetup });
 }
