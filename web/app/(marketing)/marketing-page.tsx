@@ -37,7 +37,7 @@ export function MarketingPage() {
           </div>
           <div className="flex items-center gap-6">
             <a
-              href="https://github.com/SYCO07/codemoat"
+              href="https://github.com/SYCO7/codemoat"
               target="_blank"
               rel="noopener"
               className="hidden items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground sm:flex"
@@ -198,7 +198,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: SYCO07/codemoat@v1`}
+      - uses: SYCO7/codemoat@v1`}
             </pre>
           </Reveal>
           <Reveal delay={0.1}>
@@ -239,7 +239,7 @@ jobs:
             </div>
             <p className="mt-5 text-center text-sm text-muted-foreground">
               Private-repo support is on the roadmap.{" "}
-              <a href="https://github.com/SYCO07/codemoat" target="_blank" rel="noopener" className="text-primary hover:underline">
+              <a href="https://github.com/SYCO7/codemoat" target="_blank" rel="noopener" className="text-primary hover:underline">
                 Watch the repo
               </a>{" "}
               to get notified.
@@ -255,8 +255,8 @@ jobs:
           and{" "}
           <a href="https://github.com/gitleaks/gitleaks" target="_blank" rel="noopener" className="text-primary hover:underline">Gitleaks</a>.
         </p>
-        <a href="https://github.com/SYCO07/codemoat" target="_blank" rel="noopener" className="mt-2 inline-block text-primary hover:underline">
-          github.com/SYCO07/codemoat
+        <a href="https://github.com/SYCO7/codemoat" target="_blank" rel="noopener" className="mt-2 inline-block text-primary hover:underline">
+          github.com/SYCO7/codemoat
         </a>
       </footer>
     </div>

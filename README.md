@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: SYCO07/codemoat@v1
+      - uses: SYCO7/codemoat@v1
         with:
           fail-on-severity: high # critical | high | medium | low | none
 ```
@@ -71,7 +71,7 @@ jobs:
 > `fetch-depth: 0` is required so CodeMoat can diff against the PR's base
 > commit — a shallow checkout won't have it.
 
-Replace `SYCO07/codemoat` with wherever you publish this repo; see
+Replace `SYCO7/codemoat` with wherever you publish this repo; see
 [Publishing](#publishing) below.
 
 ### Action inputs

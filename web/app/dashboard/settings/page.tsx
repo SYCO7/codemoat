@@ -53,7 +53,7 @@ export default async function SettingsPage() {
           <p className="text-sm text-muted-foreground">
             Free covers unlimited scans on public repos. Private-repo support is on the roadmap —{" "}
             <a
-              href="https://github.com/SYCO07/codemoat"
+              href="https://github.com/SYCO7/codemoat"
               target="_blank"
               rel="noopener"
               className="text-primary hover:underline"

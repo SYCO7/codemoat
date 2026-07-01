@@ -67,7 +67,7 @@ export default function ConnectPage() {
     const workflowYaml = `- uses: actions/checkout@v7
   with:
     fetch-depth: 0
-- uses: SYCO07/codemoat@v1
+- uses: SYCO7/codemoat@v1
   with:
     api-key: \${{ secrets.CODEMOAT_API_KEY }}`;
 
