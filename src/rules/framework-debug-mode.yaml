@@ -1,0 +1,40 @@
+rules:
+  - id: codemoat-flask-debug-mode-enabled
+    languages: [python]
+    severity: HIGH
+    message: >-
+      Flask app is run with debug=True. The Flask debugger exposes an
+      interactive Python console (the Werkzeug debugger) on any
+      unhandled exception, which allows arbitrary remote code execution
+      if this ever reaches a reachable environment. Gate this behind an
+      environment variable and default to False.
+    metadata:
+      cwe:
+        - "CWE-489: Active Debug Code"
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      category: security
+      confidence: HIGH
+      references:
+        - https://cwe.mitre.org/data/definitions/489.html
+    pattern: $APP.run(..., debug=True, ...)
+
+  - id: codemoat-django-debug-true
+    languages: [python]
+    severity: HIGH
+    message: >-
+      DEBUG = True is set. Django's debug pages expose stack traces,
+      environment variables, installed apps, and settings (potentially
+      including secrets) to anyone who can trigger an unhandled
+      exception. Derive this from an environment variable and default
+      to False.
+    metadata:
+      cwe:
+        - "CWE-489: Active Debug Code"
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      category: security
+      confidence: MEDIUM
+      references:
+        - https://cwe.mitre.org/data/definitions/489.html
+    pattern: DEBUG = True

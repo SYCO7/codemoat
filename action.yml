@@ -1,0 +1,81 @@
+name: 'CodeMoat'
+description: 'Security scanner for AI-generated code — Semgrep + Gitleaks + an AI-agent-specific rule pack, scoped to the PR diff.'
+author: 'CodeMoat'
+branding:
+  icon: 'shield'
+  color: 'purple'
+
+inputs:
+  github-token:
+    description: 'Token used to read PR file lists and post the results comment.'
+    required: false
+    default: ${{ github.token }}
+  fail-on-severity:
+    description: 'Minimum severity that fails the check: critical, high, medium, low, or none.'
+    required: false
+    default: 'none'
+  semgrep-configs:
+    description: 'Comma-separated extra Semgrep registry configs to run in addition to the defaults.'
+    required: false
+    default: ''
+  api-key:
+    description: 'CodeMoat dashboard API key (optional). When set, scan results are also reported to the CodeMoat dashboard. Leave unset to use CodeMoat with no account, no dashboard, no network calls beyond GitHub itself.'
+    required: false
+    default: ''
+  api-url:
+    description: 'Override the CodeMoat dashboard API base URL (for testing/self-hosting).'
+    required: false
+    default: ''
+
+outputs:
+  findings-count:
+    description: 'Total number of findings reported.'
+  critical-count:
+    description: 'Number of critical-severity findings.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
+
+    - name: Install Semgrep
+      shell: bash
+      run: pip install --quiet semgrep
+
+    - name: Install Gitleaks
+      shell: bash
+      run: |
+        set -euo pipefail
+        LATEST_TAG=$(curl -sL https://api.github.com/repos/gitleaks/gitleaks/releases/latest | grep -oE '"tag_name": *"v[^"]+"' | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+        curl -sL "https://github.com/gitleaks/gitleaks/releases/download/v${LATEST_TAG}/gitleaks_${LATEST_TAG}_linux_x64.tar.gz" -o /tmp/gitleaks.tar.gz
+        mkdir -p /tmp/gitleaks-install
+        tar xzf /tmp/gitleaks.tar.gz -C /tmp/gitleaks-install
+        sudo mv /tmp/gitleaks-install/gitleaks /usr/local/bin/gitleaks
+        gitleaks version
+
+    - name: Set up Node
+      uses: actions/setup-node@v6
+      with:
+        node-version: '20'
+
+    - name: Install CodeMoat action dependencies
+      shell: bash
+      run: npm ci --omit=dev --prefix "${{ github.action_path }}"
+
+    - name: Ensure PR base ref is fetched
+      shell: bash
+      if: ${{ github.event.pull_request }}
+      run: git fetch --no-tags --depth=1 origin "${{ github.event.pull_request.base.sha }}"
+
+    - name: Run CodeMoat
+      shell: bash
+      run: node "${{ github.action_path }}/dist/action/index.js"
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        INPUT_FAIL_ON_SEVERITY: ${{ inputs.fail-on-severity }}
+        INPUT_SEMGREP_CONFIGS: ${{ inputs.semgrep-configs }}
+        INPUT_API_KEY: ${{ inputs.api-key }}
+        INPUT_API_URL: ${{ inputs.api-url }}

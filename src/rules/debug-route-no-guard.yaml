@@ -1,0 +1,32 @@
+rules:
+  - id: codemoat-debug-route-no-guard
+    languages: [javascript, typescript]
+    severity: HIGH
+    message: >-
+      A debug/internal route is registered without an environment guard.
+      Agents frequently scaffold a debug or test-only endpoint while
+      building a feature and leave it reachable in production. Wrap
+      this route registration in an environment check (e.g.
+      `if (process.env.NODE_ENV !== "production")`) or remove it before
+      merging.
+    metadata:
+      cwe:
+        - "CWE-489: Active Debug Code"
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      category: security
+      confidence: MEDIUM
+      references:
+        - https://cwe.mitre.org/data/definitions/489.html
+    patterns:
+      - pattern: $APP.$METHOD($ROUTE, ...)
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: ^(get|post|put|delete|patch|use|all)$
+      - metavariable-regex:
+          metavariable: $ROUTE
+          regex: (?i)^"/?(__)?(debug|test-only|test_only|internal-debug)"$
+      - pattern-not-inside: |
+          if (...) {
+            ...
+          }

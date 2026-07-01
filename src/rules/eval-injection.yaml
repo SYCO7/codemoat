@@ -1,0 +1,32 @@
+rules:
+  - id: codemoat-eval-request-input
+    languages: [javascript, typescript]
+    severity: CRITICAL
+    message: >-
+      Request-derived data is passed directly to eval()/new Function().
+      This allows an attacker to execute arbitrary JavaScript on the
+      server. Parse the input with a safe, restricted evaluator (e.g. a
+      math expression library) instead of eval.
+    metadata:
+      cwe:
+        - "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+      owasp:
+        - "A03:2021 - Injection"
+      category: security
+      confidence: HIGH
+      references:
+        - https://cwe.mitre.org/data/definitions/95.html
+    patterns:
+      - pattern-either:
+          - pattern: eval($EXPR)
+          - pattern: new Function($EXPR)
+      - metavariable-pattern:
+          metavariable: $EXPR
+          patterns:
+            - pattern-either:
+                - pattern: req.body. ...
+                - pattern: req.query. ...
+                - pattern: req.params. ...
+                - pattern: req.body
+                - pattern: req.query
+                - pattern: req.params

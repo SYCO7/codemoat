@@ -1,0 +1,45 @@
+rules:
+  - id: codemoat-insecure-pickle-deserialize
+    languages: [python]
+    severity: CRITICAL
+    message: >-
+      pickle.loads()/pickle.load() is called on data that may originate
+      from a request, cookie, or other external source. Unpickling
+      untrusted data allows arbitrary code execution. Use a safe
+      serialization format (JSON) for anything that crosses a trust
+      boundary.
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      category: security
+      confidence: MEDIUM
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+    pattern-either:
+      - pattern: pickle.loads(...)
+      - pattern: pickle.load(...)
+
+  - id: codemoat-insecure-yaml-load
+    languages: [python]
+    severity: HIGH
+    message: >-
+      yaml.load() is called with an unsafe Loader (or no Loader,
+      which defaults to the unsafe Loader on older PyYAML). This can
+      instantiate arbitrary Python objects from the YAML document,
+      leading to code execution. Use yaml.safe_load() or
+      Loader=yaml.SafeLoader.
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      category: security
+      confidence: MEDIUM
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+    pattern-either:
+      - pattern: yaml.load($X)
+      - pattern: yaml.load($X, Loader=yaml.Loader)
+      - pattern: yaml.load($X, Loader=yaml.UnsafeLoader)

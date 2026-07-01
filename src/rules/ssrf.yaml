@@ -1,0 +1,27 @@
+rules:
+  - id: codemoat-ssrf-unvalidated-url
+    languages: [javascript, typescript]
+    severity: HIGH
+    message: >-
+      An outbound HTTP request is made to a raw, request-supplied URL
+      with no allowlist/host validation. An attacker can point this at
+      internal services (cloud metadata endpoints, internal admin
+      panels, etc.) that are not otherwise reachable from outside the
+      network. Validate the target host against an allowlist before
+      making the request.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery"
+      category: security
+      confidence: MEDIUM
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+    patterns:
+      - pattern-either:
+          - pattern: axios.get(req.body.$X, ...)
+          - pattern: axios.get(req.query.$X, ...)
+          - pattern: axios.post(req.body.$X, ...)
+          - pattern: fetch(req.body.$X, ...)
+          - pattern: fetch(req.query.$X, ...)

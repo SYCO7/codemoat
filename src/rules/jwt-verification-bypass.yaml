@@ -1,0 +1,20 @@
+rules:
+  - id: codemoat-jwt-algorithms-none
+    languages: [javascript, typescript]
+    severity: CRITICAL
+    message: >-
+      jwt.verify() is called with algorithms: ["none"], which accepts
+      completely unsigned tokens. Anyone can forge a token with an
+      arbitrary payload and no signature at all. Restrict to a specific
+      signing algorithm (e.g. "HS256" or "RS256") that matches how
+      tokens are actually issued.
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      category: security
+      confidence: HIGH
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+    pattern: 'jwt.verify($TOKEN, $SECRET, {..., algorithms: ["none"], ...})'

@@ -1,0 +1,25 @@
+rules:
+  - id: codemoat-path-traversal-unsanitized
+    languages: [javascript, typescript]
+    severity: HIGH
+    message: >-
+      A filesystem path is built by joining a directory with a raw
+      request-supplied value (req.params/req.query/req.body). Without
+      sanitizing the segment (e.g. path.basename) and verifying the
+      resolved path stays inside the intended directory, an attacker
+      can supply "../" sequences to read or write files outside the
+      intended folder.
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      category: security
+      confidence: MEDIUM
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+    patterns:
+      - pattern-either:
+          - pattern: path.join(..., req.params.$X, ...)
+          - pattern: path.join(..., req.query.$X, ...)
+          - pattern: path.join(..., req.body.$X, ...)

@@ -1,0 +1,28 @@
+{
+  "name": "codemoat",
+  "version": "0.1.0",
+  "description": "Security scanner for AI-generated code — GitHub Action + CLI wrapping Semgrep and Gitleaks, with a rule pack targeting AI-coding-assistant-specific vulnerabilities.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "codemoat": "./dist/cli/index.js"
+  },
+  "main": "dist/action/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "pretest": "tsc -p tsconfig.tests.json",
+    "test": "find dist-tests/tests -name '*.test.js' -print0 | xargs -0 node --test",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/github": "^9.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.1",
+    "typescript": "^6.0.3"
+  }
+}
