@@ -1,5 +1,6 @@
 node_modules/
-dist/
+# dist/ is committed on purpose — the Action needs dist/action/index.js to
+# exist in the checked-out repo at `uses: SYCO7/codemoat@v1` time.
 dist-tests/
 *.log
 .env
