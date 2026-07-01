@@ -218,16 +218,14 @@ jobs:
                   <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                     <th className="px-5 py-4"></th>
                     <th className="px-5 py-4">Free</th>
-                    <th className="px-5 py-4">
-                      Paid <span className="ml-1 rounded-full bg-primary/20 px-2 py-0.5 text-[10px] text-primary">coming soon</span>
-                    </th>
+                    <th className="px-5 py-4">Pro — $9/mo</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
                   <tr className="border-b border-border">
                     <td className="px-5 py-4">Public repos</td>
                     <td className="px-5 py-4">Unlimited scans</td>
-                    <td className="px-5 py-4 text-muted-foreground">—</td>
+                    <td className="px-5 py-4 text-primary">Unlimited scans</td>
                   </tr>
                   <tr>
                     <td className="px-5 py-4">Private repos</td>
@@ -238,11 +236,10 @@ jobs:
               </table>
             </div>
             <p className="mt-5 text-center text-sm text-muted-foreground">
-              Private-repo support is on the roadmap.{" "}
-              <a href="https://github.com/SYCO7/codemoat" target="_blank" rel="noopener" className="text-primary hover:underline">
-                Watch the repo
-              </a>{" "}
-              to get notified.
+              <Link href="/login" className="text-primary hover:underline">
+                Sign in
+              </Link>{" "}
+              to upgrade — no credit card required for the free tier.
             </p>
           </Reveal>
         </section>

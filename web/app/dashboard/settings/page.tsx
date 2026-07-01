@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { UpgradeButton } from "@/components/upgrade-button";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -49,19 +50,21 @@ export default async function SettingsPage() {
             {org?.plan === "paid" ? "Paid" : "Free"}
           </Badge>
         </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Free covers unlimited scans on public repos. Private-repo support is on the roadmap —{" "}
-            <a
-              href="https://github.com/SYCO7/codemoat"
-              target="_blank"
-              rel="noopener"
-              className="text-primary hover:underline"
-            >
-              watch the repo
-            </a>{" "}
-            to get notified when billing ships.
-          </p>
+        <CardContent className="space-y-4">
+          {org?.plan === "paid" ? (
+            <p className="text-sm text-muted-foreground">
+              Private repos are unlocked. Manage or cancel your subscription from the receipt email
+              Dodo Payments sent you at checkout.
+            </p>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">
+                Free covers unlimited scans on public repos. Upgrade for $9/month to connect private
+                repos too.
+              </p>
+              <UpgradeButton />
+            </>
+          )}
         </CardContent>
       </Card>
 

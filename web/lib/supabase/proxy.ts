@@ -31,11 +31,16 @@ export async function updateSession(request: NextRequest) {
   const user = data?.claims;
 
   const path = request.nextUrl.pathname;
-  // /api/report is machine-to-machine (GitHub Actions runners — no browser
-  // session cookie ever exists there); it authenticates its own caller via
-  // Bearer API key inside the route handler, not via Supabase session.
+  // /api/report (GitHub Actions runners) and /api/billing/webhook (Dodo
+  // Payments) are both machine-to-machine — neither ever carries a browser
+  // session cookie. Each authenticates its own caller inside the route
+  // handler (Bearer API key / webhook signature), not via Supabase session.
   const isPublicRoute =
-    path === "/" || path === "/login" || path.startsWith("/auth") || path === "/api/report";
+    path === "/" ||
+    path === "/login" ||
+    path.startsWith("/auth") ||
+    path === "/api/report" ||
+    path === "/api/billing/webhook";
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
