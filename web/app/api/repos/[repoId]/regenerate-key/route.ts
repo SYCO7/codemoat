@@ -33,16 +33,24 @@ export async function POST(request: Request, { params }: { params: Promise<{ rep
   // the same auto-wiring as connect so the repo's GitHub secret matches the
   // new key instead of silently going stale.
   const service = createServiceClient();
-  const { data: profile } = await service
+  const { data: profile, error: profileError } = await service
     .from("profiles")
     .select("github_access_token")
     .eq("id", user.id)
     .single();
+  if (profileError) {
+    console.error("regenerate-key: profile lookup failed:", profileError.message);
+  }
 
   let autoSetup = null;
   const token = profile?.github_access_token as string | null;
   if (token) {
     autoSetup = await autoSetupRepo(token, repo.owner, repo.full_name.split("/")[1] ?? repo.full_name, key);
+    if (autoSetup.warning) {
+      console.error("regenerate-key: autoSetupRepo warning:", autoSetup.warning);
+    }
+  } else {
+    console.error("regenerate-key: no github_access_token on profile", user.id);
   }
 
   return NextResponse.json({ apiKey: key, autoSetup });
