@@ -151,12 +151,15 @@ hand-written vulnerable sample (true positive) and a fixed counterpart
 
 ## Free vs. paid
 
-| | Free | Paid (coming soon) |
+| | Free | Paid |
 |---|---|---|
 | Public repos | Unlimited scans | — |
 | Private repos | — | ✅ |
 
-Paid tier is a waitlist stub for now — no billing is wired up yet.
+Billing is handled by [Dodo Payments](https://dodopayments.com). Upgrading
+from the dashboard creates a hosted checkout session; on successful payment
+a webhook flips the org to the paid plan (and back to free on cancellation,
+expiry, or payment failure).
 
 ## Development
 
