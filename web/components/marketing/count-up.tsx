@@ -13,8 +13,8 @@ export function CountUp({ to, prefix = "", suffix = "" }: { to: number; prefix?:
   useEffect(() => {
     if (!inView) return;
     if (reduceMotion) {
-      setValue(to);
-      return;
+      const frame = requestAnimationFrame(() => setValue(to));
+      return () => cancelAnimationFrame(frame);
     }
     const duration = 1200;
     let start: number | null = null;
